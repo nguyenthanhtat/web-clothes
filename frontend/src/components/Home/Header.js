@@ -32,7 +32,7 @@ const Header = () => {
 
           </div>
           <div className="center">
-            <h1 className="logo">LAMA.</h1>
+            <h1 className="logo">LAMA..</h1>
           </div>
           <div className="right">
             {refreshToken && refreshToken.success ?(
