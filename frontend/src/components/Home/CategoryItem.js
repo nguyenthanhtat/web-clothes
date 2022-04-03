@@ -48,12 +48,11 @@ const CategoryItem = ({ item }) => {
   const navigate = useNavigate();
   return (
     <Container>
-      {/* <Link to={`/products/${item.cat}`}> */}
-      <Link to='/shopnow'>
+      <Link to={`/productlist/${item.cat}`}>
       <Image src={item.img} />
       <Info>
         <Title>{item.title}</Title>
-        <Button >SHOP NOWSs</Button>
+        <Button >SHOP NOW</Button>
       </Info>
       </Link>
     </Container>

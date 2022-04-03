@@ -61,6 +61,7 @@ export const GetProfileFail =(error)=>({
     payload:error,
 })
 
+
 export const RegisterInitiate =(
     fullname,email,password
 )=>{
@@ -138,6 +139,7 @@ export const GetProfileInitiate =(token)=> async(dispatch)=>{
         dispatch(GetProfileFail(error));
     }
 }
+
 //!CLEAR_ERRORS
 export const clearErrors = () => async (dispatch) => {
     dispatch({ type: types.CLEAR_ERRORS_SUCCESS });

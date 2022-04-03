@@ -41,6 +41,16 @@ const productCtrl={
             res.status(500).json(err)
         }
     },
+    GetProduct: async(req, res)=>{
+        try {
+            const product = await Product.findById(req.params.id)
+            const {password,...others}=product._doc;
+            res.status(200).json({others});
+            
+        } catch (err) {
+            res.status(500).json(err) 
+        }
+    },
     GetallProduct : async (req, res)=>{
         const qNew = req.query.new;//truy van theo danh muc
         const qCategory = req.query.category;

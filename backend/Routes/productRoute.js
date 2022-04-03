@@ -11,5 +11,7 @@ router.put('/updateproduct/:id',auth,authAdmin,productCtrl.UpdateProduct);
 router.delete('/deleteproduct/:id',auth,authAdmin,productCtrl.DeleteProduct);
 //getall product
 router.get('/getallproduct',productCtrl.GetallProduct);
+//getall product
+router.get('/find/:id',productCtrl.GetProduct);
 
 module.exports=router;

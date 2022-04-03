@@ -17,6 +17,6 @@ export {default as Product} from "../components/Home/Product"
 export {default as Newsletter} from "../components/Home/Newsletter"
 export {default as NavBar} from "../components/Home/Navbar"
 export {default as ShopNow} from "../pages/Shop/ShopNow"
-export {default as Productt} from "../pages/Product/Product"
+export {default as ProductDetail} from "../pages/Product/ProductDetail"
 export {default as ProductList} from "../pages/Product/ProductList"
 

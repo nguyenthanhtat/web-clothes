@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GetProfileInitiate } from "../redux/Action/ActionAuth";
+import { GetProfileInitiate,GetAllProductInitiate } from "../redux/Action/ActionAuth";
 const UserAPI = (token) => {
     const dispatch = useDispatch();
     useEffect(() => {

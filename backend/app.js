@@ -31,6 +31,9 @@ app.use('/api/carts',carts)
 // order
 const orders = require('./Routes/orderRoute.js');
 app.use('/api/orders',orders)
+
+const categories = require('./Routes/categoryRoute.js');
+app.use('/api/categories',categories)
 //Upload
 const upload = require('./Routes/UploadCloud.js');
 app.use('/api', upload);

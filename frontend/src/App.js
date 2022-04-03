@@ -7,7 +7,8 @@ import {
   LoginTest,
   Profiles,
   ShopNow,
-  Productt,
+  Products,
+  ProductDetail,
   ProductList,
 } from './imports/index'
 import Cart from './pages/Cart'
@@ -23,8 +24,9 @@ function App() {
       <Route path="/profile" element={<Profiles />} />
       <Route path="/shopnow" element={<ShopNow />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/product" element={<Productt />} />
-      <Route path="/productlist" element={<ProductList />} />
+      <Route path="/products/:id" element={<ProductDetail />} />
+      <Route path="/products" element={<ProductList/>} />
+      <Route path="/productlist/:category" element={<ProductList />} />
       </Routes>
       </>
   )

@@ -5,9 +5,7 @@ import { MetaData } from "../../imports/index";
 import { logo } from "../../imports/image";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  loginInitiate, clearErrors,
-} from "../../redux/Action/ActionAuth";
+import { loginInitiate, clearErrors } from "../../redux/Action/ActionAuth";
 import { toast } from "react-toastify";
 import LoadingSmall from "../../pages/Loading/LoadingSmall";
 const Logined = () => {
@@ -26,12 +24,13 @@ const Logined = () => {
   const Auth = auth;
   const handleSubmitForm = (data) => {
     const { email, password } = data;
-    console.log(data)
-    dispatch(loginInitiate({email, password}));
+    console.log(data);
+    dispatch(loginInitiate({ email, password }));
   };
   const handleIsLock = () => {
     setIsLock(!isLock);
   };
+  console.log(isLock, "isLock");
   useEffect(() => {
     if (auth.success === true) {
       window.location.href = "/";
@@ -44,7 +43,7 @@ const Logined = () => {
     }
   }, [Auth]);
   return (
-   <>
+    <>
       <AuthenticationStyle />
       <MetaData title="Login-Movie" />
       <div className="login">
@@ -63,7 +62,6 @@ const Logined = () => {
                 required: true,
                 pattern: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i,
               })}
-              type="email"
               name="email"
               id="email"
             />
@@ -98,9 +96,9 @@ const Logined = () => {
               {errors.password?.type === "required" &&
                 "Mời bạn nhập đầy đủ mật khẩu. "}
             </span>
-    
-              <button className="loginButton">Sign In</button>
-         
+
+            <button className="loginButton">Sign In</button>
+
             <span>
               New to Netflix ? &nbsp;
               <b
@@ -124,8 +122,8 @@ const Logined = () => {
           </form>
         </div>
       </div>
-   </>
-  )
-}
+    </>
+  );
+};
 
-export default Logined
+export default Logined;

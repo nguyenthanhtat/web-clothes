@@ -9,6 +9,7 @@ const initialState = {
     authRegister: [],
     refreshTokens: [],
     profile:[],
+    product:[]
 }
 const AuthReducer = (state=initialState,action)=>{
     switch (action.type) {
@@ -64,6 +65,23 @@ const AuthReducer = (state=initialState,action)=>{
                 loading:false,
                 error:action.payload,
             }
+            case types.GET_PRODUCT_START:
+                return{
+                    ...state,
+                    loading:true,
+                }
+            case types.GET_PRODUCT_SUCCESS:
+                return{
+                    ...state,
+                    loading:false,
+                    product:action.payload,
+                }
+            case types.GET_PRODUCT_FAIL:
+                return{
+                    ...state,
+                    loading:false,
+                    error:action.payload,
+                }    
         default:
             return state;
         
