@@ -2,37 +2,41 @@ const Users = require('../Model/userModel.js')
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const sendEmail = require('./SendEmail');
+const { OAuth2Client } = require("google-auth-library");
+const CLIENT_ID = process.env.GOOGLE_CLIENT_IDS;
+const client = new OAuth2Client(CLIENT_ID);
+
 const path = require('path');
 const { chownSync } = require('fs');
-const userCtrl ={
+const mailer = require('../untils/mailer');
+const userCtrl = {
     //create new account
-    Register: async (req,res)=>{
+    Register: async (req, res) => {
         try {
-            const {fullname,email,password,sex,date_of_birth,phone_number} = req.body;
-            const user = await Users.findOne({email});
+            const { fullname, email, password, sex, date_of_birth, phone_number } = req.body;
+            const user = await Users.findOne({ email });
             if (user)
-            return res.json({
-              status: 400,
-              success: false,
-              msg: 'The email already exists.',
-            });
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: 'The email already exists.',
+                });
             if (password.length < 6)
-            return res.json({
-              status: 400,
-              success: false,
-              msg: 'Password is at least 6 characters long.',
-            });
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: 'Password is at least 6 characters long.',
+                });
             //kiểm tra format password
             let reg = new RegExp(
                 '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$'
             ).test(password);
             if (!reg) {
                 return res.json({
-                status: 400,
-                success: false,
-                message:
-                    'Password must contain at least one number and one uppercase and lowercase and special letter, and at least 6 or more characters ',
+                    status: 400,
+                    success: false,
+                    message:
+                        'Password must contain at least one number and one uppercase and lowercase and special letter, and at least 6 or more characters ',
                 });
             }
             // Password Encryption
@@ -46,286 +50,407 @@ const userCtrl ={
                 phone_number,
 
             });
-               // Save mongodb
+            // Save mongodb
             await newUser.save();
-            
+
             // Then create jsonwebtoken to authentication
-            const accesstoken = createAccessToken({ id: newUser._id,role:0 });
-            const refreshtoken = createRefreshToken({ id: newUser._id,role:0 });
+            const accesstoken = createAccessToken({ id: newUser._id, role: 0 });
+            const refreshtoken = createRefreshToken({ id: newUser._id, role: 0 });
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
                 path: '/api/auth/customer/refresh_token',
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
             });
+            const hashEmail = await bcrypt.hash(email, parseInt(process.env.BCRYPT_SALT_ROUND))
+            try {
+                console.log(`email`, `${process.env.APP_URL}/api/auth/customer/verifyAccount?email=${email}&token=${hashEmail}`);
+             const info =  await mailer.sendMail(email, 'verify email', `<a href="${process.env.APP_URL}/api/auth/customer/verifyAccount?email=${email}&token=${hashEmail}">Verify</a>`)
+            console.log('info', info)
+            } catch (error) {
+                console.log('error', error)
+            }
             res.json({
                 status: 200,
                 success: true,
                 accesstoken,
                 msg: 'Register Successfully 😍!!',
             });
-        }catch(error){
+
+        } catch (error) {
+            console.log('error', error)
             return res.json({
                 status: 400,
                 success: false,
                 msg: error.message,
-              });
+            });
         }
     },
-    async refreshToken (req, res) {
-        try{    
+    async verifyAccount(req, res) {
+        try {
+            const { email } = res.body
+            console.log('email', email)
+        } catch (err) {
+            res.json({
+                status: 400,
+                success: false,
+                msg: err.message,
+            });
+
+        }
+    },
+    async refreshToken(req, res) {
+        try {
             const rf_token = req.cookies.refreshtoken;
-            console.log(rf_token,'rftoken')
-            if(!rf_token) return res.json({msg:'Please Login or Register'});
-            jwt.verify(rf_token,process.env.REFRESH_TOKEN_SECRET,(err,user)=>{
-                if(err) return res.json({msg:'Please Login or Register'});
-                const accessToken = createAccessToken({id:user.id,role:user.role});
+            console.log('rftoken', rf_token)
+            if (!rf_token) return res.json({ msg: 'Please Login or Register' });
+            jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+                if (err) return res.json({ msg: 'Please Login or Register' });
+                const accessToken = createAccessToken({ id: user.id, role: user.role });
 
                 res.json({
-                    status:200,
-                    success:true,
-                    msg:'Login Sucessfully',
-                    accessToken:accessToken,
+                    status: 200,
+                    success: true,
+                    msg: 'Login Sucessfully',
+                    accessToken: accessToken,
                 });
             });
-            
-        }catch(err){
+
+        } catch (err) {
             res.json({
-                status:400,
-                success:false,
-                msg:err.message,
+                status: 400,
+                success: false,
+                msg: err.message,
             });
 
         }
     },
-    async loginCustomer(req,res){
+    //đăng nhập gg
+    loginGoogle: async (req, res) => {
+        const { tokenId } = req.body;
+        console.log('tokenId', tokenId)
         try {
-            const {email,password} = req.body;
-            const user = await Users.findOne({email: email,role:0});
-            if(!user)
-            return res.json({
-                status:400,
-                success:false,
-                msg:'User does not exist',
-            }); 
-            const isMatch = await bcrypt.compare(password,user.password);
-            if(!isMatch)
-            return res.json({
-                status:400,
-                success:false,
-                msg:'Incorrect password.',
-            });
-            //if login success, crate access token and refresh token
-            const accessToken = createAccessToken({id:user._id,role:0});
-            const refreshtoken = createRefreshToken({id:user._id,role:0});
-            
-            res.cookie('refreshtoken',refreshtoken,{
-                httpOnly:true,
-                path:'/api/auth/customer/refresh_token',
-                maxAge:7 * 24 * 60 * 60 * 1000, // 7d
-            
-            });
-            res.json({
-                status:200,
-                success:true,
-                accessToken,
-                msg:'Login Sucessfully!',
-            })
-        }catch(err){
-            return res.json({
-                status:400,
-                success:false,
-                msg:err.message,
-            })
+            client
+                .verifyIdToken({
+                    idToken: tokenId,
+                    audience: process.env.CLIENT_ID,
+                })
+                .then((response) => {
+                    console.log('response', response)
+                    const { email_verified, name, email, picture } = response.payload;
+                    if (email_verified) {
+                        Users.findOne({ email, role: 0 }).exec((error, user) => {
+                            if (error) {
+                                return res.json({
+                                    status: 400,
+                                    success: false,
+                                    msg: "Invalid Authentication",
+                                });
+                            } else {
+                                if (user) {
+                                    console.log('user', user)
+                                    const accesstoken = createAccessToken({
+                                        id: user._id,
+                                        role: user.role,
+                                    });
+                                    const refreshtoken = createRefreshToken({
+                                        id: user._id,
+                                        role: user.role,
+                                    });
+                                    console.log('refreshtoken', refreshtoken)
+                                    res.cookie('refreshtoken', refreshtoken, {
+                                        httpOnly: true,
+                                        path: '/api/auth/customer/refresh_token',
+                                        maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+                                    });
+                                    const { _id, fullname, email, image } = user;
+                                    res.json({
+                                        status: 200,
+                                        success: true,
+                                        msg: "Login successfully",
+                                        accesstoken,
+                                        user: { _id, fullname, email, image },
+                                    });
+                                } else {
+                                    let password = "null";
+
+                                    let newUser = new Users({
+                                        fullname: name,
+                                        email,
+                                        password,
+                                        image: picture,
+                                        verify: true,
+                                    });
+                                    newUser.save((err, data) => {
+                                        if (err) {
+                                            return res.json({
+                                                status: 400,
+                                                success: false,
+                                                msg: "Invalid Authentication",
+                                            });
+                                        }
+                                        console.log('data', data)
+                                        const accesstoken = createAccessToken({
+                                            id: data._id,
+                                            role: data.role,
+                                        });
+                                        const refreshtoken = createRefreshToken({
+                                            id: data._id,
+                                            role: data.role,
+                                        });
+
+                                        res.cookie('refreshtoken', refreshtoken, {
+                                            httpOnly: true,
+                                            path: '/api/auth/customer/refresh_token',
+                                            maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+
+                                        });
+                                        const { _id, fullname, email, verify, image, role } = data
+                                        res.json({
+                                            status: 200,
+                                            success: true,
+                                            msg: "Register successfully",
+                                            accesstoken,
+                                            user: { customerId: _id, fullname, email, image, verify, role },
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+        } catch (error) {
+            console.log('error', error)
         }
     },
-    async loginAdmin  (req,res) {
+    async loginCustomer(req, res) {
         try {
-            const {email,password} =req.body;
-            //kt admin
-            const user = await Users.findOne({email,role:1});
-            if(!user){
+            const { email, password } = req.body;
+            const user = await Users.findOne({ email: email, role: 0 });
+            if (!user)
                 return res.json({
-                    status:400,
-                    success:false,
-                    msg:"User khong ton tai"
-                })
-            }
-            //dung email thi kt password
-            const match = await bcrypt.compare(password,user.password);
-            if(!match){
-                return res.json({
-                    status:400,
-                    success:false,
-                    msg:"incorrect password"
+                    status: 400,
+                    success: false,
+                    msg: 'User does not exist',
                 });
-            }
-            //dang nhap thanh cong tao token
-            const accesstoken = createAccessToken({id:user.id,role:user.role});
-            const refreshtoken = createAccessToken({id:user.id,role:user.role});
-            // luu vao cookie
-            res.cookie('refreshtoken',refreshtoken,{
-                httpOnly:true,
-                path:'/api/auth/admin/refresh_token',
-                maxAge:7*24*60*60*1000,//7d
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch)
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: 'Incorrect password.',
+                });
+            //if login success, crate access token and refresh token
+            const accessToken = createAccessToken({ id: user._id, role: 0 });
+            const refreshtoken = createRefreshToken({ id: user._id, role: 0 });
+
+            res.cookie('refreshtoken', refreshtoken, {
+                httpOnly: true,
+                path: '/api/auth/customer/refresh_token',
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+
             });
-            return res.json({
-                status:200,
-                success:true,
-                accesstoken,
-                msg:'Login sucessfully'
+            res.json({
+                status: 200,
+                success: true,
+                accessToken,
+                msg: 'Login Sucessfully!',
             })
         } catch (err) {
             return res.json({
-                status:400,
-                success:false,
-                msg:err.message,
+                status: 400,
+                success: false,
+                msg: err.message,
             })
         }
     },
-    async logoutCustomer (req, res) {
-        try{
-            res.clearCookie('refreshtoken',{
-                path:'/api/auth/customer/refresh_token',
+    async loginAdmin(req, res) {
+        try {
+            const { email, password } = req.body;
+            //kt admin
+            const user = await Users.findOne({ email, role: 1 });
+            if (!user) {
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: "User khong ton tai"
+                })
+            }
+            //dung email thi kt password
+            const match = await bcrypt.compare(password, user.password);
+            if (!match) {
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: "incorrect password"
+                });
+            }
+            //dang nhap thanh cong tao token
+            const accesstoken = createAccessToken({ id: user.id, role: user.role });
+            const refreshtoken = createAccessToken({ id: user.id, role: user.role });
+            // luu vao cookie
+            res.cookie('refreshtoken', refreshtoken, {
+                httpOnly: true,
+                path: '/api/auth/admin/refresh_token',
+                maxAge: 7 * 24 * 60 * 60 * 1000,//7d
             });
             return res.json({
-                status:200,
-                success:true,
-                msg:'logged out success'
+                status: 200,
+                success: true,
+                accesstoken,
+                msg: 'Login sucessfully'
+            })
+        } catch (err) {
+            return res.json({
+                status: 400,
+                success: false,
+                msg: err.message,
+            })
+        }
+    },
+    async logoutCustomer(req, res) {
+        try {
+            res.clearCookie('refreshtoken', {
+                path: '/api/auth/customer/refresh_token',
+            });
+            return res.json({
+                status: 200,
+                success: true,
+                msg: 'logged out success'
             });
 
-            
-        }catch(err){
+
+        } catch (err) {
             return res.json({
-                status:400,
-                msg:err.message,
+                status: 400,
+                msg: err.message,
             });
         }
 
     },
     //xem profile
-    async profile(req, res){
-        try{
+    async profile(req, res) {
+        try {
             const user = await Users.findById(req.user.id).select('-password');
-            if(!user) 
-            return res.json({
-                status:400,
-                success: false,
-                msg:'User does not exist',
-            });
+            if (!user)
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: 'User does not exist',
+                });
             res.json({
-                status:200,
+                status: 200,
                 success: true,
                 user,
             });
 
-        }catch(err){
+        } catch (err) {
             return res.json({
-                status:400,
-                msg:err.message,
+                status: 400,
+                msg: err.message,
             })
         }
     },
     //update profile
-    async updateProfile (req, res) {
-        try{
-            const {fullname,image,phone_number,sex,date_of_birth} = req.body;
+    async updateProfile(req, res) {
+        try {
+            const { fullname, image, phone_number, sex, date_of_birth } = req.body;
             if (!image)
-            return res.json({
-              status: 400,
-              success: false,
-              msg: 'No image upload',
-            });
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: 'No image upload',
+                });
             await Users.findOneAndUpdate(
-                {_id:req.user.id},
-                {fullname,image,phone_number,sex,date_of_birth,updatedAt:Date.now}
-                
-                );
+                { _id: req.user.id },
+                { fullname, image, phone_number, sex, date_of_birth, updatedAt: Date.now }
+
+            );
             res.json({
-                status:200,
-                success:true,
-                msg:'Updated Profile Successfully !',
+                status: 200,
+                success: true,
+                msg: 'Updated Profile Successfully !',
             });
 
-        }catch(err){
+        } catch (err) {
             return res.json({
-                status:400,
-                msg:err.message,
+                status: 400,
+                msg: err.message,
             })
         }
     },
-    async ChangePassword (req, res) {
-        try{
+    async ChangePassword(req, res) {
+        try {
             const user = await Users.findById(req.user.id).select('+password');
             console.log(user)
-            const {password,oldPassword,confirmPassword} = req.body;
-            if(!password)
-            return res.json({
-                status:400,
-                succes:false,
-                msg:'Password are not empty.',
-            });
+            const { password, oldPassword, confirmPassword } = req.body;
+            if (!password)
+                return res.json({
+                    status: 400,
+                    succes: false,
+                    msg: 'Password are not empty.',
+                });
             if (!confirmPassword)
                 return res.json({
-                    status:400,
-                    success:false,
-                    msg:'Confirm password are not empty.',
+                    status: 400,
+                    success: false,
+                    msg: 'Confirm password are not empty.',
                 });
             if (!oldPassword)
-            return res.json({
-                status:400,
-                success:false,
-                msg:'Old password are not empty.',
-            });
-            if(password.length <6)
-            return res.json({
-                status:400,
-                success:false,
-                msg:'Password must be at least 6 characters',
-            });
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: 'Old password are not empty.',
+                });
+            if (password.length < 6)
+                return res.json({
+                    status: 400,
+                    success: false,
+                    msg: 'Password must be at least 6 characters',
+                });
             let reg = new RegExp(
-            '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$'
+                '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$'
             ).test(password);
-            if(!reg){
+            if (!reg) {
                 return res.json({
-                    status:400,
-                    success:false,
-                    msg:'Includes 6 characters,uppercase,lowercase and some and special character.',
+                    status: 400,
+                    success: false,
+                    msg: 'Includes 6 characters,uppercase,lowercase and some and special character.',
 
                 });
             }
-            if(confirmPassword !== password){
+            if (confirmPassword !== password) {
                 return res.json({
-                    status:400,
-                    success:false,
-                    msg:'Old Password Incorrect',
+                    status: 400,
+                    success: false,
+                    msg: 'Old Password Incorrect',
                 });
 
             }
-            const isMatch = await bcrypt.compare(oldPassword,user.password);
-            if(!isMatch)
+            const isMatch = await bcrypt.compare(oldPassword, user.password);
+            if (!isMatch)
                 return res.json({
-                    status:400,
-                    success:false,
-                    msg:'Old Password Incorrect',
+                    status: 400,
+                    success: false,
+                    msg: 'Old Password Incorrect',
 
                 });
             const salt = await bcrypt.genSalt(10);
-            const passwordHash = await bcrypt.hash(password,salt);
+            const passwordHash = await bcrypt.hash(password, salt);
             const userPassword = await Users.findByIdAndUpdate(
-                {_id:user.id},
-                {password:passwordHash,},
-                {new:true}
+                { _id: user.id },
+                { password: passwordHash, },
+                { new: true }
             );
             return res.json({
-                status:200,
-                success:true,
-                msg:'Change Password Successfully!',
+                status: 200,
+                success: true,
+                msg: 'Change Password Successfully!',
             });
 
-        }catch(err){
+        } catch (err) {
             return res.json({
-                status:400,
-                msg:err.message,
+                status: 400,
+                msg: err.message,
             })
         }
     },
@@ -461,63 +586,63 @@ const userCtrl ={
     //         msg:'Reset successfully',
     //     });
 
-        
+
     // },
-    async GetAllCutomer (req, res) {
-        try{
+    async GetAllCutomer(req, res) {
+        try {
             const allAcount = await Users.find({})
             return res.status(200).json({
-                status:200,
-                msg:' Get all Cutomer successfully',
-                data:allAcount
+                status: 200,
+                msg: ' Get all Cutomer successfully',
+                data: allAcount
             })
 
-        }catch(err){
+        } catch (err) {
 
             return res.status(400).json({
-                status:400,
-                msg:' Get all Cutomer Fail'
+                status: 400,
+                msg: ' Get all Cutomer Fail'
             })
         }
     },
-    async RemoveCutomer (req, res) {
-        try{
+    async RemoveCutomer(req, res) {
+        try {
             const id = req.params.id
-            await Users.findByIdAndRemove({_id:id});
+            await Users.findByIdAndRemove({ _id: id });
             return res.status(200).json({
-                status:200,
-                msg:'Remove Cutomer successfully',
+                status: 200,
+                msg: 'Remove Cutomer successfully',
             })
 
-        }catch(err){
+        } catch (err) {
 
             return res.status(400).json({
-                status:400,
-                msg:'Remove CutomerFail'
+                status: 400,
+                msg: 'Remove CutomerFail'
             })
         }
     },
-    async UpdateCutomer (req, res) {
-        try{
+    async UpdateCutomer(req, res) {
+        try {
             const id = req.params.id
-            const {email, password} = req.body
-            if(email === "" && password === ""){
+            const { email, password } = req.body
+            if (email === "" && password === "") {
                 return res.status(400).json({
-                    status:400,
-                    msg:'empty email or password'
+                    status: 400,
+                    msg: 'empty email or password'
                 })
             }
-            await Users.findByIdAndUpdate({_id:id},{email:email, password:password});
+            await Users.findByIdAndUpdate({ _id: id }, { email: email, password: password });
             return res.status(200).json({
-                status:200,
-                msg:'Update Cutomer successfully',
+                status: 200,
+                msg: 'Update Cutomer successfully',
             })
 
-        }catch(err){
+        } catch (err) {
 
             return res.status(400).json({
-                status:400,
-                msg:'Update Cutome Fail'
+                status: 400,
+                msg: 'Update Cutome Fail'
             })
         }
     },
@@ -525,8 +650,29 @@ const userCtrl ={
 }
 const createAccessToken = (user) => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2h' });
-  };
-  const createRefreshToken = (user) => {
+};
+const createRefreshToken = (user) => {
     return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-  };
+};
 module.exports = userCtrl;
+
+exports.verifyEmail = (req, res) => {
+    try {
+        bcrypt.compare(req.query.email, req.query.token, (err, result) => {
+            if (result === true) {
+                console.log('verify true')
+            } else {
+                console.log('verify false')
+            }
+        })
+
+    } catch (err) {
+        console.log('err', err)
+        res.json({
+            status: 400,
+            success: false,
+            msg: err.message,
+        });
+
+    }
+}

@@ -20,11 +20,8 @@ const UserSchema = new mongoose.Schema({
         default: 0,
       },
     image:{
-        type:Object,
-        default:{
-            public_id:'download_b6mzzk',
-            url:'https://res.cloudinary.com/tatdevweb/image/upload/v1646135659/download_b6mzzk.png'
-        },
+        type:String,
+        default:'https://res.cloudinary.com/tatdevweb/image/upload/v1646135659/download_b6mzzk.png',
     },
     phone_number:{
         type:String,
@@ -41,6 +38,10 @@ const UserSchema = new mongoose.Schema({
         required:false,
         trim:true,
 
+    },
+    verify : {
+        type:Boolean,
+        default:false
     },
     createAt:{
         type:String,

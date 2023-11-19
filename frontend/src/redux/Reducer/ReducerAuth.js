@@ -9,7 +9,8 @@ const initialState = {
     authRegister: [],
     refreshTokens: [],
     profile:[],
-    product:[]
+    product:[],
+    customer:{}
 }
 const AuthReducer = (state=initialState,action)=>{
     switch (action.type) {
@@ -81,7 +82,12 @@ const AuthReducer = (state=initialState,action)=>{
                     ...state,
                     loading:false,
                     error:action.payload,
-                }    
+                } 
+        case types.CUSTOMER   :
+            return {
+                ...state,
+                customer:action.payload
+            }
         default:
             return state;
         

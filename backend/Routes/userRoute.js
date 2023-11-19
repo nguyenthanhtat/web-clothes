@@ -7,8 +7,12 @@ const router = require('express').Router();
 router.post('/register',userCtrl.Register);
 //login customer
 router.post('/login',userCtrl.loginCustomer);
+//login customer
+router.post('/login-google',userCtrl.loginGoogle);
 //refresh token
 router.get('/refresh_token', userCtrl.refreshToken);
+// verify account
+router.get('/verifyAccount', userCtrl.verifyAccount);
 //đăng xuất
 router.get('/logout', userCtrl.logoutCustomer);
 // xem profile 

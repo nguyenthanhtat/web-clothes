@@ -8,7 +8,7 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 console.log(process.env.CLOUD_NAME, "cloudinary connect");
-
+          
 // Upload image user
 router.post("/uploadImageUser", (req, res) => {
   try {

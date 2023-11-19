@@ -1,0 +1,1 @@
+export const LOGIN_GOOGLE ='/api/auth/customer/login-google'
