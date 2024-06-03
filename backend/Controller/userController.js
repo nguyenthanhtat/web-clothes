@@ -1,11 +1,12 @@
-const Users = require('../Model/userModel.js')
+
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID = process.env.GOOGLE_CLIENT_IDS;
 const client = new OAuth2Client(CLIENT_ID);
-
+const usersModel = require('../Model/userModel.js');
+const Users = usersModel.Users
 const path = require('path');
 const { chownSync } = require('fs');
 const mailer = require('../untils/mailer');
@@ -64,8 +65,8 @@ const userCtrl = {
             const hashEmail = await bcrypt.hash(email, parseInt(process.env.BCRYPT_SALT_ROUND))
             try {
                 console.log(`email`, `${process.env.APP_URL}/api/auth/customer/verifyAccount?email=${email}&token=${hashEmail}`);
-             const info =  await mailer.sendMail(email, 'verify email', `<a href="${process.env.APP_URL}/api/auth/customer/verifyAccount?email=${email}&token=${hashEmail}">Verify</a>`)
-            console.log('info', info)
+                const info = await mailer.sendMail(email, 'verify email', `<a href="${process.env.APP_URL}/api/auth/customer/verifyAccount?email=${email}&token=${hashEmail}">Verify</a>`)
+                console.log('info', info)
             } catch (error) {
                 console.log('error', error)
             }
@@ -87,8 +88,17 @@ const userCtrl = {
     },
     async verifyAccount(req, res) {
         try {
-            const { email } = res.body
-            console.log('email', email)
+            const { email, token } = req.query
+            console.log('token', token)
+            console.log('email222', email)
+            bcrypt.compare(email, token, (err, result) => {
+                if (result === true) {
+                    console.log('verify true')
+                    usersModel.verifyAccount(email);
+                } else {
+                    console.log('verify false')
+                }
+            })
         } catch (err) {
             res.json({
                 status: 400,

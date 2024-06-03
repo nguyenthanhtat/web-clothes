@@ -5,62 +5,65 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-      },
+    },
     email: {
-        type:String,
+        type: String,
         required: true,//bat buoc phai nhap
         unique: true,
     },
     password: {
-        type:String,
+        type: String,
         required: true,//bat buoc phai
     },
     role: {
         type: Number,
         default: 0,
-      },
-    image:{
-        type:String,
-        default:'https://res.cloudinary.com/tatdevweb/image/upload/v1646135659/download_b6mzzk.png',
     },
-    phone_number:{
-        type:String,
-        required:false,
-        trim:true,
+    image: {
+        type: String,
+        default: 'https://res.cloudinary.com/tatdevweb/image/upload/v1646135659/download_b6mzzk.png',
     },
-    sex:{
-        type:String,
-        required:false,
-        trim:true,
+    phone_number: {
+        type: String,
+        required: false,
+        trim: true,
     },
-    date_of_birth:{
-        type:String,
-        required:false,
-        trim:true,
+    sex: {
+        type: String,
+        required: false,
+        trim: true,
+    },
+    date_of_birth: {
+        type: String,
+        required: false,
+        trim: true,
 
     },
-    verify : {
-        type:Boolean,
-        default:false
+    verify: {
+        type: Boolean,
+        default: false
     },
-    createAt:{
-        type:String,
-        required:false,
-        trim:true,
+    createAt: {
+        type: String,
+        required: false,
+        trim: true,
     },
-    updatedAt:{
-        type:Date,
-        default:Date.now,
+    updatedAt: {
+        type: Date,
+        default: Date.now,
 
     },
-    resetPasswordToken:String,
-    resetPasswordExpire:Date,
-    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+},
     {
-        timestamps:true
+        timestamps: true
     }
 );
-UserSchema.methods.getResetPasswordToken = function(){
+
+const userModel = mongoose.model('User', UserSchema);
+
+UserSchema.methods.getResetPasswordToken = function () {
     // tao ma thong bao
     const resetToken = crypto.randomBytes(20).toString('hex');
     //Them resetPasswordToken vaof userSchema
@@ -69,8 +72,15 @@ UserSchema.methods.getResetPasswordToken = function(){
         .update(resetToken)
         .digest('hex');
 
-    this.resetPasswordExpire = Date.now() +15*60*1000;
-    
+    this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
     return resetToken;
 };
-module.exports=mongoose.model('User',UserSchema);
+exports.verifyAccount = (email) => {
+    console.log('email', email)
+    return userModel.updateOne(
+        { email: email },
+        { $set: { verify: true } },
+    );
+}
+exports.Users =  userModel
