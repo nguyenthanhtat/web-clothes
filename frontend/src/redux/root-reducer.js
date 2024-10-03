@@ -1,8 +1,5 @@
 import {combineReducers} from 'redux'
-import AuthReducer from './Reducer/ReducerAuth'
-import AdminProductReducer from './Reducer/ReducerProduct'
-const rootReducer = combineReducers({
-    auth:AuthReducer,
-    product:AdminProductReducer
+import auth from './Reducer/ReducerAuth'
+export default combineReducers({
+    auth
 });
-export default rootReducer;

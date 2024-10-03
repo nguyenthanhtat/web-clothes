@@ -16,8 +16,8 @@ const UserSchema = new mongoose.Schema({
         required: true,//bat buoc phai
     },
     role: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: 'user',
     },
     image: {
         type: String,

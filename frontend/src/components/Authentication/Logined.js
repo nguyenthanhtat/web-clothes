@@ -1,13 +1,12 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
-import { AuthenticationStyle } from "../../Style/Authentication/AuthenticationStyle";
-import { useNavigate } from "react-router-dom";
-import { MetaData } from "../../imports/index";
-import { logo } from "../../imports/image";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { loginInitiate, clearErrors } from "../../redux/Action/ActionAuth";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import LoadingSmall from "../../pages/Loading/LoadingSmall";
+import { logo } from "../../imports/image";
+import { MetaData } from "../../imports/index";
+import { loginInitiate } from "../../redux/Action/ActionAuth";
+import { AuthenticationStyle } from "../../Style/Authentication/AuthenticationStyle";
 const Logined = () => {
   const {
     register,
@@ -24,22 +23,19 @@ const Logined = () => {
   const Auth = auth;
   const handleSubmitForm = (data) => {
     const { email, password } = data;
-    console.log(data);
     dispatch(loginInitiate({ email, password }));
   };
   const handleIsLock = () => {
     setIsLock(!isLock);
   };
-  console.log(isLock, "isLock");
+
   useEffect(() => {
     if (auth.success === true) {
-      window.location.href = "/";
-      localStorage.setItem("firstLogin", true);
-      dispatch(clearErrors());
+      // window.location.href = "/";
+      // localStorage.setItem("firstLogin", true);
     }
     if (auth.success === false) {
       toast.error(`${auth.msg}`);
-      dispatch(clearErrors());
     }
   }, [Auth]);
   return (

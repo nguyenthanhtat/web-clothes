@@ -2,6 +2,7 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const authCustomer = require('../middleware/authCustomer')
 const userCtrl = require('../Controller/userController.js');
+const { verify } = require('jsonwebtoken');
 const router = require('express').Router();
 // register user
 router.post('/register',userCtrl.Register);
@@ -21,6 +22,7 @@ router.get('/profile', auth, authCustomer, userCtrl.profile);
 router.patch('/profile/update', auth, authCustomer, userCtrl.updateProfile);
 //thay đổi mật khẩu
 router.patch('/changePassword', auth, authCustomer, userCtrl.ChangePassword);
+router.post('/verify', userCtrl.verifyAccount);
 
 //quên mật khẩu tài khoản khách hàng
 // router.post('/forget', userCtrl.forgetPasswordCustomer);

@@ -11,8 +11,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {refreshToken,profile} =useSelector((state)=> state.auth);
-  // console.log(refreshToken && refreshToken.status,'refreshTokenss');
-  console.log(profile,'profile');
+  
   const handleLogout =(e)=>{
     e.preventDefault();
     dispatch(LogoutInitiate());

@@ -20,7 +20,7 @@ const Profile = () => {
   const [callback,setCallback] = state.callback;
   const dispatch = useDispatch();
   const {profile,refreshTokens}=useSelector((state)=> state.auth);
-  console.log(refreshTokens,'token')
+
   useEffect(() => {
     if (profile.image) {
       setState({ ...profile});
@@ -112,7 +112,7 @@ const Profile = () => {
       toast.error(error.response.data.msg);
     }
   };
-  console.log(images,'image')
+
   const styleUpload = {
     display: images ? "block" : "none",
   };

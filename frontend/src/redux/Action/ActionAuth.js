@@ -1,6 +1,7 @@
 import axios from "axios";
-import * as types from "../ActionTypes"
 import { LOGIN_GOOGLE } from "../../contants/Auth";
+import * as types from "../ActionTypes";
+
 //Register
 export const RegisterApiStart = () => ({
   type: types.REGISTER_API_START,
@@ -87,12 +88,14 @@ export const RegisterInitiate = (
   };
 };
 export const loginInitiate = ({ email, password }) => async (dispatch) => {
-  console.log(email, password, 'tientai');
   try {
     const { data } = await axios.post(`/api/auth/customer/login`, {
       email,
       password,
     });
+    if(data?.user){
+      dispatch(setActiveAccount(data.user))
+    }
     dispatch(LoginSuccess(data));
   } catch (error) {
     dispatch(LoginFail(error));
@@ -121,7 +124,6 @@ export const RefreshTokenInitiate = (token) => async (dispatch) => {
 
     const { data } = await axios.get(`/api/auth/customer/refresh_token`, {
       headers: { Authorization: ` ${token}` },
-      //tat dau buôi
     });
 
     dispatch(RefreshTokenSuccess(data));
@@ -132,11 +134,11 @@ export const RefreshTokenInitiate = (token) => async (dispatch) => {
 //profile
 export const GetProfileInitiate = (token) => async (dispatch) => {
   try {
-    dispatch(GetProfileStart());
-    const { data } = await axios.get(`/api/auth/customer/profile`, {
-      headers: { Authorization: `${token}` },
-    });
-    dispatch(GetProfileSuccess(data.user));
+    // dispatch(GetProfileStart());
+    // const { data } = await axios.get(`/api/auth/customer/profile`, {
+    //   headers: { Authorization: `${token}` },
+    // });
+    // dispatch(GetProfileSuccess(data.user));
 
   } catch (error) {
     dispatch(GetProfileFail(error));
@@ -155,6 +157,14 @@ export const loginGoogleInitiate = (tokenId) => {
       .catch((error) => {
         // dispatch(LoginGoogleFail(error.data));
       });
+  };
+};
+
+export const setActiveAccount = (account) => {
+  console.log('account', account)
+  return {
+       type: types.SET_ACTIVE_ACCOUNT,
+       payload: account,
   };
 };
 

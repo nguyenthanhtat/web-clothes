@@ -32,3 +32,5 @@ export const GET_ONE_PRODUCT_START = "GET_ONE_PRODUCT_START";
 export const GET_ONE_PRODUCT_SUCCESS = "GET_ONE_PRODUCT_SUCCESS";
 export const GET_ONE_PRODUCT_FAIL = "GET_ONE_PRODUCT_FAIL";
 export const CUSTOMER = "customer";
+
+export const SET_ACTIVE_ACCOUNT = 'set_active_account';

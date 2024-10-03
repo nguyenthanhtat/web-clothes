@@ -65,7 +65,7 @@ const userCtrl = {
             const hashEmail = await bcrypt.hash(email, parseInt(process.env.BCRYPT_SALT_ROUND))
             try {
                 console.log(`email`, `${process.env.APP_URL}/api/auth/customer/verifyAccount?email=${email}&token=${hashEmail}`);
-                const info = await mailer.sendMail(email, 'verify email', `<a href="${process.env.APP_URL}/api/auth/customer/verifyAccount?email=${email}&token=${hashEmail}">Verify</a>`)
+                const info = await mailer.sendMail(email, 'verify email', `<a href="${process.env.APP_URL}/verify-account/?email=${email}&token=${hashEmail}">Verify</a>`)
                 console.log('info', info)
             } catch (error) {
                 console.log('error', error)
@@ -86,19 +86,26 @@ const userCtrl = {
             });
         }
     },
-    async verifyAccount(req, res) {
+    verifyAccount: async (req, res) => {
         try {
-            const { email, token } = req.query
+            console.log('req', req)
+            const { email, token } = req.body
             console.log('token', token)
             console.log('email222', email)
-            bcrypt.compare(email, token, (err, result) => {
+            bcrypt.compare(email, token, async (err, result) => {
                 if (result === true) {
                     console.log('verify true')
-                    usersModel.verifyAccount(email);
+                    await usersModel.verifyAccount(email);
                 } else {
                     console.log('verify false')
                 }
             })
+            res.json({
+                status: 200,
+                success: true,
+                msg: 'verify Successfully 😍!!',
+                redirectUrl: `/logintest`,
+            });
         } catch (err) {
             res.json({
                 status: 400,
@@ -156,7 +163,8 @@ const userCtrl = {
                                     msg: "Invalid Authentication",
                                 });
                             } else {
-                                if (user) {
+                                console.log('user', user)
+                                if (user?.verify) {
                                     console.log('user', user)
                                     const accesstoken = createAccessToken({
                                         id: user._id,
@@ -188,7 +196,7 @@ const userCtrl = {
                                         email,
                                         password,
                                         image: picture,
-                                        verify: true,
+                                        verify: false,
                                     });
                                     newUser.save((err, data) => {
                                         if (err) {
@@ -199,7 +207,7 @@ const userCtrl = {
                                             });
                                         }
                                         console.log('data', data)
-                                        const accesstoken = createAccessToken({
+                                        const token = createAccessToken({
                                             id: data._id,
                                             role: data.role,
                                         });
@@ -208,18 +216,12 @@ const userCtrl = {
                                             role: data.role,
                                         });
 
-                                        res.cookie('refreshtoken', refreshtoken, {
-                                            httpOnly: true,
-                                            path: '/api/auth/customer/refresh_token',
-                                            maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
-
-                                        });
+                                        res.cookie('token', token, 7 * 24 * 60 * 60 * 1000)
                                         const { _id, fullname, email, verify, image, role } = data
                                         res.json({
                                             status: 200,
                                             success: true,
                                             msg: "Register successfully",
-                                            accesstoken,
                                             user: { customerId: _id, fullname, email, image, verify, role },
                                         });
                                     });
@@ -235,35 +237,41 @@ const userCtrl = {
     async loginCustomer(req, res) {
         try {
             const { email, password } = req.body;
-            const user = await Users.findOne({ email: email, role: 0 });
-            if (!user)
-                return res.json({
-                    status: 400,
-                    success: false,
-                    msg: 'User does not exist',
-                });
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch)
-                return res.json({
-                    status: 400,
-                    success: false,
-                    msg: 'Incorrect password.',
-                });
-            //if login success, crate access token and refresh token
-            const accessToken = createAccessToken({ id: user._id, role: 0 });
-            const refreshtoken = createRefreshToken({ id: user._id, role: 0 });
+            await Users.findOne({ email: email }).then(async (user) => {
+                if (!user) {
+                    return res.json({
+                        status: 400,
+                        success: false,
+                        msg: 'User does not exist',
+                    });
+                } else {
+                    const isMatch = await bcrypt.compare(password, user.password);
 
-            res.cookie('refreshtoken', refreshtoken, {
-                httpOnly: true,
-                path: '/api/auth/customer/refresh_token',
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+                    if (!isMatch){
+                        return res.json({
+                            status: 400,
+                            success: false,
+                            msg: 'Incorrect password.',
+                        });
+                    }
 
-            });
-            res.json({
-                status: 200,
-                success: true,
-                accessToken,
-                msg: 'Login Sucessfully!',
+                    if (!user?.verify){
+                        return res.json({
+                            status: 400,
+                            success: false,
+                            msg: 'Account has not been verified.',
+                        });
+                    }
+
+                    const token = createAccessToken({ id: user._id, role: 0 });
+                    res.json({
+                        status: 200,
+                        success: true,
+                        user: { id: user._id.toString(), fullname: user.fullname, email: user.email, password: user.password, role: user.role, image: user.image, verify: user.verify },
+                        token,
+                        msg: 'Login Sucessfully!',
+                    })
+                }
             })
         } catch (err) {
             return res.json({

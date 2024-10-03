@@ -13,7 +13,6 @@ const Container = styled.div`
 
 const Products = ({cat,filters,sort}) => {
   const { product, loading } = useSelector((state) => state.product);
-  console.log(product,'productssss')
  
   return (
     <Container>

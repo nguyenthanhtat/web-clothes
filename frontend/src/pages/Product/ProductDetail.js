@@ -21,7 +21,6 @@ const Product = () => {
     const [callback, setCallback] = state.callback
     const {refreshTokens}=useSelector((state)=> state.auth);
     const {productDetails,product}=useSelector((state)=> state.product);
-    console.log(productDetails,'productDetails')
     useEffect(() => {
         if(id){
             dispatch(GetFindProductInitiate(id))

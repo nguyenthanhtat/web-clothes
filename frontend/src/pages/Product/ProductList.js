@@ -39,7 +39,6 @@ const Option = styled.option`
 const ProductList = () => {
     const location =useLocation();//moc vi tri
     const cat =location.pathname.split("/")[2]
-    console.log(cat)
     const [sort,setSort] =useState('newest')
     const [filters,setFilter] =useState({})
     const handleFilters =(e)=>{

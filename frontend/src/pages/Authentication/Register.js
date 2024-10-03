@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { RegisterStyle } from '../../Style/Authentication/RegisterStyle'
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux'
-import { RegisterInitiate, clearErrors, loginGoogleInitiate } from '../../redux/Action/ActionAuth'
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { RegisterInitiate, loginGoogleInitiate } from '../../redux/Action/ActionAuth';
+import { RegisterStyle } from '../../Style/Authentication/RegisterStyle';
 
 const Register = () => {
   const {
@@ -18,11 +18,11 @@ const Register = () => {
   } = useForm();
   const passwords = useRef({})
   passwords.current = watch("password")
+  const userActive = useSelector((state) => state.auth.userActive);
+  console.log('userActive+++', userActive)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { authRegister, customer, auth } = useSelector((state) => state.auth);
-  console.log('customer', customer)
-  console.log('auth', auth)
   const handleSubmitForm = (data) => {
     const { email, fullname, password } = data;
     dispatch(RegisterInitiate(fullname, email, password));
@@ -52,8 +52,7 @@ const Register = () => {
     if (authRegister.success === true) {
       reset();
       toast.success(`${authRegister.msg}`);
-      navigate("/logintest");
-      dispatch(clearErrors());
+      navigate("/login");;
 
     } else if (authRegister.success === false) {
       toast.error(`${authRegister.msg}`);
@@ -63,15 +62,12 @@ const Register = () => {
     if (auth.success === true) {
       window.location.href = "/";
       localStorage.setItem("firstLogin", true);
-      dispatch(clearErrors());
     }
     if (auth.success === false) {
       toast.error(`${auth.msg}`);
-      dispatch(clearErrors());
     }
   }, [auth]);
   const handleLoginGoogle = (credentialResponse) => {
-    console.log('credentialResponse', credentialResponse.credential)
     dispatch(loginGoogleInitiate(credentialResponse.credential));
   }
   const handleLoginGoogleFail = (credentialResponse) => {
@@ -156,6 +152,7 @@ const Register = () => {
               />
             </GoogleOAuthProvider>
             <button className="btn">CREATE</button>
+            <button className="btn" onClick={navigate('/login')}>CREATE</button>
 
           </form>
 
