@@ -1,5 +1,5 @@
 import React from 'react'
-import { Add, Remove } from "@material-ui/icons";
+// import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
 import {Header,Footer,Announcement} from '../imports/index'
 import { mobile } from "../Style/Authentication/responsive";
@@ -157,9 +157,9 @@ const Cart = () => {
                         </ProductDetails>
                         <PriceDetail>
                             <ProductAmountContainer>
-                                <Add/>
+                                {/* <Add/>
                                 <ProductAmount>2</ProductAmount>
-                                <Remove/>
+                                <Remove/> */}
                             </ProductAmountContainer>
                             <ProductPrice>$ 30</ProductPrice>
                         </PriceDetail>
@@ -178,9 +178,9 @@ const Cart = () => {
                         </ProductDetails>
                         <PriceDetail>
                             <ProductAmountContainer>
-                                <Add/>
+                                {/* <Add/>
                                 <ProductAmount>1</ProductAmount>
-                                <Remove/>
+                                <Remove/> */}
                             </ProductAmountContainer>
                             <ProductPrice>$ 20</ProductPrice>
                         </PriceDetail>

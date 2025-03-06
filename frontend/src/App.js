@@ -16,7 +16,8 @@ import Cart from './pages/Cart'
 import { ToastContainer } from "react-toastify";
 import VerifyAccount from "./pages/Authentication/VerifyAccount";
 import { useSelector } from "react-redux";
-
+import './scss/style.scss';
+import AdminHome from "./components/admin/AdminHome";
 function App() {
   const auth = useSelector((state) => state.auth.userActive);
   console.log('auth', auth)
@@ -29,7 +30,8 @@ function App() {
           {/* <Route path="/" element={<TheLayout />} />  */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          {/* <Route path="/verify-account" element={<VerifyAccount />} /> */}
+          <Route path="/admin" element={<AdminHome />} />
+          <Route path="/verify-account" element={<VerifyAccount />} />
           {/* <Route path="/profile" element={<Profiles />} /> */}
           {/* <Route path="/home" element={<ShopNow />} />
           <Route path="/cart" element={<Cart />} />
@@ -38,6 +40,7 @@ function App() {
           <Route path="/productlist/:category" element={<ProductList />} /> */}
 
         </Routes>
+        <ToastContainer />
       </BrowserRouter>
     </>
   )

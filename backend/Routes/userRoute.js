@@ -14,6 +14,8 @@ router.post('/login-google',userCtrl.loginGoogle);
 router.get('/refresh_token', userCtrl.refreshToken);
 // verify account
 router.get('/verifyAccount', userCtrl.verifyAccount);
+// verify account
+router.get('/account',auth, userCtrl.fetchAccount);
 //đăng xuất
 router.get('/logout', userCtrl.logoutCustomer);
 // xem profile 

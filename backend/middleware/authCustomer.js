@@ -5,7 +5,7 @@ const authCustomer = async (req, res, next) => {
       const user = await Users.findOne({
         _id: req.user.id,
       });
-      if (user.role === 1)
+      if (user.role === 'user')
         return res.status(400).json({
           status: 400,
           msg: 'Customer resources access denied',

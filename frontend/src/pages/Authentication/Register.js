@@ -1,31 +1,51 @@
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+// import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RegisterInitiate, loginGoogleInitiate } from '../../redux/Action/ActionAuth';
 import { RegisterStyle } from '../../Style/Authentication/RegisterStyle';
+import { Formik } from 'formik';
+import { CButton, CForm, CFormInput } from '@coreui/react';
+import axios from 'axios';
+import { toastError } from '../../utils';
 
 const Register = () => {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    watch,
-    getValues,
-    reset,
-  } = useForm();
-  const passwords = useRef({})
-  passwords.current = watch("password")
+  // const {
+  //   register,
+  //   formState: { errors },
+  //   handleSubmit,
+  //   watch,
+  //   getValues,
+  //   reset,
+  // } = useForm();
+  // const passwords = useRef({})
+  // passwords.current = watch("password")
+  const [isLock, setIsLock] = useState(false);
+  const handleIsLock = () => {
+    setIsLock(!isLock);
+  };
   const userActive = useSelector((state) => state.auth.userActive);
-  console.log('userActive+++', userActive)
+  console.log('userActive', userActive)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { authRegister, customer, auth } = useSelector((state) => state.auth);
-  const handleSubmitForm = (data) => {
+  const handleSubmitForm = async(data) => {
+    console.log('data', data)
     const { email, fullname, password } = data;
-    dispatch(RegisterInitiate(fullname, email, password));
+    await axios.post(`http://localhost:5000/api/auth/customer/register`, {
+      email,
+      fullname,
+      password,
+    }).then((res) => {
+      if (res.data.status === 200) {
+        console.log('res', res)
+        toast.success(`check email`);
+      }else {
+        toastError(res)
+      }
+    })
   }
   const [isHiddenPassword, setIsHiddenPassword] = useState({
     hiddenPassword: false,
@@ -50,7 +70,7 @@ const Register = () => {
   // }, [customer])
   useEffect(() => {
     if (authRegister.success === true) {
-      reset();
+      // reset();
       toast.success(`${authRegister.msg}`);
       navigate("/login");;
 
@@ -75,16 +95,70 @@ const Register = () => {
   }
 
   return (
-    <>
+    <div className="login-section">
       <RegisterStyle />
 
       <div className="container">
         <div className="wrapper">
-          <h1 className="title">CREATE ACOUNT</h1>
-          <form className="form" onSubmit={handleSubmit(handleSubmitForm)}>
+          <div className="w-100 d-flex justify-content-center align-items-center flex-column">
+            <h1 className="title">CREATE ACOUNT</h1>
+            <div className="w-100">
+
+              <Formik
+                initialValues={{ email: '', password: '' }}
+                onSubmit={handleSubmitForm}
+              >
+                {({
+                  values,
+                  errors,
+                  handleChange,
+                  handleSubmit,
+                  isSubmitting,
+                  handleBlur
+                }) => (
+                  <CForm onSubmit={handleSubmit}>
+                    <div className="d-flex justify-content-center align-items-center flex-column">
+                      <CFormInput
+                        className="input"
+                        placeholder="fullname"
+                        name="fullname"
+                        id="fullname"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name}
+                      />
+                        <CFormInput
+                      className="input"
+                      placeholder="email"
+                      type="email"
+                      name="email"
+                      id="email"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name}
+                    />
+                      <CFormInput
+                        type={isLock ? "type" : "password"}
+                        //  {...register("password", { required: true })}
+                        className="input"
+                        placeholder="password"
+                        name="password"
+                        id="password"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.password}
+                      />
+
+                      <CButton type="submit" className="btn mt-2">Register</CButton>
+                    </div>
+                  </CForm>
+                )}
+              </Formik>
+            </div>
+            {/* <form className="form" onSubmit={handleSubmit(handleSubmitForm)}>
             {/* <input className="input" placeholder= "name"/>
             <input  className="input" placeholder= "last name"/> */}
-            <input className="input" placeholder="fullname"
+            {/* <input className="input" placeholder="fullname"
               {...register("fullname", { required: true, maxLength: 20 })}
               type='text' name='fullname' id='fullname'
             />
@@ -152,15 +226,17 @@ const Register = () => {
               />
             </GoogleOAuthProvider>
             <button className="btn">CREATE</button>
-            <button className="btn" onClick={navigate('/login')}>CREATE</button>
+            <button className="btn" onClick={navigate('/login')}>CREATE</button> */}
 
-          </form>
+            {/* </form>  */}
+
+
+          </div>
 
         </div>
-
       </div>
-    </>
-  )
+      </div>
+      )
 }
 
-export default Register 
+      export default Register 

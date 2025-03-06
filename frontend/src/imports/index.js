@@ -1,11 +1,9 @@
-export { default as Login } from "../pages/Authentication/Login";
 export { default as Home } from "../pages/Home/Home";
 export { default as TheLayout } from "../pages/TheLayout/index";
 export { default as Register } from "../pages/Authentication/Register";
 export {default as Header} from "../components/Home/Header"
-export {default as Logined} from "../components/Authentication/Logined"
+export {default as Login} from "../pages/Authentication/Login"
 export {default as MetaData} from "../pages/MetaData/MetaData"
-export {default as LoginTest} from "../pages/Authentication/Login"
 export {default as Profiles} from "../pages/Authentication/Profiles"
 export {default as Profile} from "../components/Profile/Profile"
 export {default as Footer} from "../pages/Footer/Footer"

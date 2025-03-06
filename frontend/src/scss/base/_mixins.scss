@@ -1,0 +1,75 @@
+@mixin position-center-middle() {
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+}
+
+@mixin position-left-middle() {
+     position: absolute;
+     top: 50%;
+     left: 0;
+     transform: translateY(-50%);
+}
+
+@mixin position-left-middle-param($left) {
+     position: absolute;
+     top: 50%;
+     left: $left;
+     transform: translateY(-50%);
+}
+
+@mixin position-right-middle() {
+     position: absolute;
+     top: 50%;
+     right: 0;
+     transform: translateY(-50%);
+}
+
+@mixin position-right-middle-param($right) {
+     position: absolute;
+     z-index: 3;
+     top: 50%;
+     right: $right;
+     transform: translateY(-50%);
+}
+
+@mixin position-over-left-middle($m_right) {
+     position: absolute;
+     top: 50%;
+     right: 100%;
+     margin-right: $m_right;
+     transform: translateY(-50%);
+}
+
+@mixin position-over-right-middle($m_left) {
+     position: absolute;
+     top: 50%;
+     left: 100%;
+     margin-left: $m_left;
+     transform: translateY(-50%);
+}
+
+@mixin scrollbar-effect() {
+     &::-webkit-scrollbar-track {
+          -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+          border-radius: 10px;
+          background-color: #f5f5f5;
+     }
+
+     &::-webkit-scrollbar {
+          width: 8px;
+          background-color: #f5f5f5;
+     }
+
+     &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+     }
+}
+
+@mixin flex-container($flex, $justifyContent, $alignItems) {
+     display: $flex;
+     justify-content: $justifyContent;
+     align-items: $alignItems;
+}

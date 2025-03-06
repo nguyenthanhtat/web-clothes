@@ -1,12 +1,12 @@
-import {
-    Facebook,
-    Instagram,
-    MailOutline,
-    Phone,
-    Pinterest,
-    Room,
-    Twitter,
-  } from "@material-ui/icons";
+// import {
+//     Facebook,
+//     Instagram,
+//     MailOutline,
+//     Phone,
+//     Pinterest,
+//     Room,
+//     Twitter,
+//   } from "@material-ui/icons";
   import styled from "styled-components";
   import { mobile } from "../../Style/Authentication/responsive";
   
@@ -95,7 +95,7 @@ import {
             the majority have suffered alteration in some form, by injected
             humour, or randomised words which don’t look even slightly believable.
           </Desc>
-          <SocialContainer>
+          {/* <SocialContainer>
             <SocialIcon color="3B5999">
               <Facebook />
             </SocialIcon>
@@ -108,7 +108,7 @@ import {
             <SocialIcon color="E60023">
               <Pinterest />
             </SocialIcon>
-          </SocialContainer>
+          </SocialContainer> */}
         </Left>
         <Center>
           <Title>Useful Links</Title>
@@ -127,7 +127,7 @@ import {
         </Center>
         <Right>
           <Title>Contact</Title>
-          <ContactItem>
+          {/* <ContactItem>
             <Room style={{marginRight:"10px"}}/> 622 Dixie Path , South Tobinchester 98336
           </ContactItem>
           <ContactItem>
@@ -136,7 +136,7 @@ import {
           <ContactItem>
             <MailOutline style={{marginRight:"10px"}} /> contact@lama.dev
           </ContactItem>
-          <Payment src="https://i.ibb.co/Qfvn4z6/payment.png" />
+          <Payment src="https://i.ibb.co/Qfvn4z6/payment.png" /> */}
         </Right>
       </Container>
     );

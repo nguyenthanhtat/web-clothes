@@ -2,6 +2,8 @@ import React from 'react';
 import { hydrate, render } from 'react-dom';
 import { Provider } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
+import '@coreui/coreui/dist/css/coreui.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
 import './index.css';
 import { configureStore } from './redux/Store';

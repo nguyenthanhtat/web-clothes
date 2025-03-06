@@ -1,7 +1,7 @@
 import React,{useState,useEffect, useContext} from 'react'
 import styled from "styled-components"
 import {Header,Announcement,Newsletter,Footer} from "../../imports/index"
-import { Add, Remove } from "@material-ui/icons";
+// import { Add, Remove } from "@material-ui/icons";
 import {mobile} from '../../Style/Authentication/responsive'
 import {useLocation} from 'react-router-dom'
 import { useDispatch,useSelector } from "react-redux";
@@ -73,13 +73,13 @@ const Product = () => {
                 </FilterContainer>
                 <AddContainer>
                 <AmountContainer>
-                <Remove 
+                {/* <Remove 
                 onClick={()=>handleQuanlity("dec")} 
-                />
+                /> */}
                 <Amount>{quanlity}</Amount>
-                <Add 
+                {/* <Add 
                 onClick={()=>handleQuanlity("inc")}
-                 />
+                 /> */}
                 </AmountContainer>
                 <Button 
                 // onClick={handleADD}

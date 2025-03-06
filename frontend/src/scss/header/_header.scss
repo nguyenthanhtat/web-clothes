@@ -1,0 +1,76 @@
+.header{
+     .menuItem{
+          color: aqua;
+     }
+}
+h1{
+     color: rgb(24, 72, 204);
+}
+
+.header{
+     height: 80px;
+}
+
+.wrapper{
+     margin:0;
+     background-color:#EDF5E1;
+     width:100%;
+     padding: 10px 20px;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+}
+
+.left{
+     flex: 1;
+     display: flex;
+     align-items: center;
+ 
+ }
+ button{
+     padding:5px;
+     border-radius:10px;
+     &:hover{
+         background-color:#fbf8cc;
+     }
+ 
+ }
+ .language{
+     font-size: 14px;
+     cursor: pointer;
+ 
+ }
+ .searchContainer{
+     border: 0.5px solid lightgray;
+     display: flex;
+     align-items: center;
+     margin-left: 25px;
+     padding: 5px;
+ 
+ }
+ .input{
+     border: none;
+     &:hover{
+         background-color:#fbf8cc;
+     }
+ }
+ .center{
+     flex: 1;
+     text-align: center;
+ 
+ }
+ .Logo{
+     font-weight: bold;
+ }
+ .right{
+     flex: 1;
+     display: flex;
+     align-items: center;
+     justify-content: flex-end;
+
+ }
+ .menuItem{
+     font-size: 14px;
+     cursor: pointer;
+     margin-left: 25px;
+}

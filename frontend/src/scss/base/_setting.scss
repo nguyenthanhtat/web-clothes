@@ -1,0 +1,66 @@
+
+$roboto: "Roboto", serif;
+/* font-family body */
+$font-family-base: $roboto;
+
+//Color system
+$white: #fff;
+$black: #000;
+$message-863 : #863f3f;
+
+
+//Theme Colors
+$primary : #20a8d8;
+$secondary: #c8ced3;
+$success: #4dbd74;
+$danger: #f86c6b;
+$warning: #ffc107;
+$info: #63c2de;
+$light: #f0f3f5;
+$dark: #2f353a;
+
+//Grays
+$gray-100: #f0f3f5;
+$gray-200: #e4e7ea;
+$gray-300: #c8ced3;
+$gray-400: #acb4bc;
+$gray-500: #8f9ba6;
+$gray-600: #73818f;
+$gray-700: #5c6873;
+$gray-800: #2f353a;
+$gray-900: #23282c;
+
+//Addition Colors
+$blue: #20a8d8;
+$light-blue: #63c2de;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #e83e8c;
+$red: #f86c6b;
+$orange: #f8cb00;
+$yellow: #ffc107;
+$green: #4dbd74;
+$teal: #20c997;
+$cyan: #17a2b8;
+
+$body-color:#2f353a !default;
+$body-bg: #f7f8f9;
+//font-size
+// @function rem($pixels, $context: 16) {
+//     @if (unitless($pixels)) {
+//         $pixels: $pixels * 1px;
+//     }
+//     @if (unitless($context)) {
+//         $context: $context * 1px;
+//     }
+//     @return $pixels / $context * 1rem;
+// }
+
+$font-b: 16;
+$font-px: 16px;
+
+// $h1-font-size : rem(35);
+// $h2-font-size : rem(35);
+// $h4-font-size : rem(21);
+// $h5-font-size : rem(18);
+// $h6-font-size : rem(16);

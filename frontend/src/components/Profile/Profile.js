@@ -4,7 +4,7 @@ import {logo} from '../../imports/image'
 import { useDispatch,useSelector } from 'react-redux'
 import axios from 'axios'
 import {GlobalState} from '../../Context/GlobalState'
-import swal from "sweetalert";
+// import swal from "sweetalert";
 import { ToastContainer, toast } from 'react-toastify';
 const initialState ={
   name: "",
@@ -38,9 +38,9 @@ const Profile = () => {
   const handleEdit = async(e)=>{
     e.preventDefault();
     if(!images)
-      return swal('no Image Upload.',{
-        icon:'error'
-      });
+      // return swal('no Image Upload.',{
+      //   icon:'error'
+      // });
     try {
       await axios.patch(
         `/api/auth/customer/profile/update`,
@@ -49,9 +49,9 @@ const Profile = () => {
           Authorization:`${refreshTokens}`
         }}
       );
-      swal("Edit profile Successfully",{
-        icon: "success",
-      });
+      // swal("Edit profile Successfully",{
+      //   icon: "success",
+      // });
       setCallback(!callback);
     } catch (error) {
       alert(error.msg)
@@ -81,20 +81,20 @@ const Profile = () => {
     e.preventDefault();
     try {
       const file = e.target.files[0];
-      if (!file)
-        return swal("File not Exists", {
-          icon: "error",
-        });
-      if (file.size > 1024 * 1024)
-        // 1mb
-        return swal("Size too large!", {
-          icon: "error",
-        });
-      if (file.type !== "image/jpeg" && file.type !== "image/png")
-        // 1mb
-        return swal("File format is incorrect.", {
-          icon: "error",
-        });
+      // if (!file)
+      //   return swal("File not Exists", {
+      //     icon: "error",
+      //   });
+      // if (file.size > 1024 * 1024)
+      //   // 1mb
+      //   return swal("Size too large!", {
+      //     icon: "error",
+      //   });
+      // if (file.type !== "image/jpeg" && file.type !== "image/png")
+      //   // 1mb
+      //   return swal("File format is incorrect.", {
+      //     icon: "error",
+      //   });
       let formData = new FormData();
 
       formData.append("file", file);

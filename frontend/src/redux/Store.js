@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose } from "redux";
-import thunk from "redux-thunk";
+import { thunk } from "redux-thunk"; // Named import for redux-thunk
 import rootReducer from "./root-reducer";
 
 export function configureStore(initialState = {}) {
@@ -7,10 +7,9 @@ export function configureStore(initialState = {}) {
   const enhancers = [applyMiddleware(thunk)];
 
   const store = createStore(
-       rootReducer,
-       initialState,
-       compose(...enhancers)
+    rootReducer,
+    initialState,
+    compose(...enhancers)
   );
   return store;
 }
-

@@ -1,8 +1,8 @@
-import {
-    FavoriteBorderOutlined,
-    SearchOutlined,
-    ShoppingCartOutlined,
-  } from "@material-ui/icons";
+// import {
+//     FavoriteBorderOutlined,
+//     SearchOutlined,
+//     ShoppingCartOutlined,
+//   } from "@material-ui/icons";
   import { Link } from "react-router-dom";
   import styled from "styled-components";
   
@@ -72,7 +72,7 @@ const Product = ({ item }) => {
     <Container>
       <Circle />
       <Image src={item.image} />
-      <Info>
+      {/* <Info>
         <Icon>
           <ShoppingCartOutlined />
         </Icon>
@@ -84,7 +84,7 @@ const Product = ({ item }) => {
         <Icon>
           <FavoriteBorderOutlined />
         </Icon>
-      </Info>
+      </Info> */}
     </Container>
   );
 };

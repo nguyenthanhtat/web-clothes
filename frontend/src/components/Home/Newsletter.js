@@ -1,4 +1,4 @@
-import { Send } from "@material-ui/icons";
+// import { Send } from "@material-ui/icons";
 import styled from "styled-components";
 import { mobile } from "../../Style/Authentication/responsive";
 
@@ -53,9 +53,9 @@ const Newsletter = () => {
       <Desc>Get timely updates from your favorite products.</Desc>
       <InputContainer>
         <Input placeholder="Your email" />
-        <Button>
+        {/* <Button>
           <Send />
-        </Button>
+        </Button> */}
       </InputContainer>
     </Container>
   );

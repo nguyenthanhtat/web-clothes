@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,14 +8,14 @@ import { MetaData } from "../../imports/index";
 import { loginInitiate } from "../../redux/Action/ActionAuth";
 import { AuthenticationStyle } from "../../Style/Authentication/AuthenticationStyle";
 const Logined = () => {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    watch,
-  } = useForm();
+  // const {
+  //   register,
+  //   formState: { errors },
+  //   handleSubmit,
+  //   watch,
+  // } = useForm();
   const passwords = useRef({});
-  passwords.current = watch("password");
+  // passwords.current = watch("password");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isLock, setIsLock] = useState(false);
@@ -49,7 +49,7 @@ const Logined = () => {
           </div>
         </div>
         <div className="container">
-          <form onSubmit={handleSubmit(handleSubmitForm)}>
+          {/* <form onSubmit={handleSubmit(handleSubmitForm)}>
             <h1>Sign In</h1>
             <input
               type="email"
@@ -115,7 +115,7 @@ const Logined = () => {
               This page is protected by Google reCAPTCHA to ensure you're not a
               bot. <b>Learn more</b>.
             </small>
-          </form>
+          </form> */}
         </div>
       </div>
     </>

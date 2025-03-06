@@ -13,6 +13,7 @@ const VerifyAccount = () => {
     await axios.post(`/api/auth/customer/verify`, {
       email, token
     }).then((res)=>{
+      console.log('res', res)
       if(res.status === 200 && res?.data?.redirectUrl){
           navigate(res?.data?.redirectUrl);
       }

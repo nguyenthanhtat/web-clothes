@@ -115,6 +115,33 @@ const userCtrl = {
 
         }
     },
+    fetchAccount: async (req, res) => {
+        try {
+            console.log('req', req.user)
+            const {id} = req.user
+            const user = await Users.findOne({ id:id  });
+            console.log('user', user)
+            if(user){
+                res.json({
+                    status: 200,
+                    success: true,
+                    user: { id: user._id.toString(), fullname: user.fullname, email: user.email, password: user.password, role: user.role, image: user.image, verify: user.verify },
+                })
+            } else {
+                res.json({
+                    status: 200,
+                    success: true,
+                })
+            }
+        } catch (err) {
+            res.json({
+                status: 400,
+                success: false,
+                msg: err.message,
+            });
+
+        }
+    },
     async refreshToken(req, res) {
         try {
             const rf_token = req.cookies.refreshtoken;
